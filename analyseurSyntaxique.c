@@ -107,6 +107,32 @@ void depiler(pile* stack)
     }
 }
 
+
+int sommetPile(pile* stack)
+{
+    return stack->pile[stack->taille];
+}
+
+
+void inverserPile(pile*stack)
+{
+    pile* tmpStack;
+    initialiserPile(tmpStack);
+
+    while(stack->taille != -1)
+    {
+        empiler(tmpStack,sommetPile(stack));
+        depiler(stack);
+    }
+
+    while(tmpStack->taille != -1)
+    {
+        empiler(stack,sommetPile(tmpStack));
+        depiler(tmpStack);
+    }
+}
+
+
 void main()
 {
     FILE *tokensFile = NULL;
