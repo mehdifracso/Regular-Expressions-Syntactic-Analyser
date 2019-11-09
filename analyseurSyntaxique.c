@@ -5,7 +5,8 @@
 #include "pile.c"
 
 
-int tableLL[8][7] = {
+int tableLL[8][7] =
+{
     {1, 1, 1, 0, 0, 0, 0},
     {0, 0, 0, 3, 2, 0, 3},
     {4, 4, 4, 0, 0, 0, 0},
@@ -13,9 +14,31 @@ int tableLL[8][7] = {
     {5, 5, 5, 6, 6, 0, 6},
     {9, 9, 9, 9, 9, 8, 9},
     {0, 0, 0, 0, 0, 10, 0},
-    {11, 12, 13, 0, 0, 0, 0}};
+    {11, 12, 13, 0, 0, 0, 0}
+};
 
 
+
+int retournerIndiceTerminal(char c)
+{
+    switch(c)
+    {
+    case 'a':
+        return 0;
+    case 'b':
+        return 1;
+    case '(':
+        return 2;
+    case ')':
+        return 3;
+    case '+':
+        return 4;
+    case '*':
+        return 5;
+    case '$':
+        return 6;
+    }
+}
 void afficherTerminal(int i)
 {
     switch (i)
@@ -44,6 +67,7 @@ void afficherTerminal(int i)
     case 8:
         puts(" F");
         break;
+    }
 }
 
 void afficherProduction(int i)
@@ -87,7 +111,7 @@ void afficherProduction(int i)
         puts(" F --> b ");
         break;
     case 13:
-        puts(" F --> (R) (ou F --> C, ask ihssane) ");
+        puts(" F --> ( ");
         break;
     }
 }
@@ -102,42 +126,56 @@ void empilerProd(pile* stack, int idProd)
         empiler(stack,3);
         break;
     case 2:
-        puts(" R' --> +R ");
+        //puts(" R' --> +R ");
         empiler(stack,1);
-        empiler(stack,3);
+        empiler(stack,'+');
         break;
     case 3:
-        puts(" R' --> ε ");
+        //puts(" R' --> ε ");
+        depiler(stack);
         break;
     case 4:
-        puts(" A --> CB ");
+        //puts(" A --> CB ");
+        empiler(stack,5);
+        empiler(stack,4);
         break;
     case 5:
-        puts(" B --> A ");
+        //puts(" B --> A ");
+        empiler(stack,3);
         break;
     case 6:
-        puts(" B --> ε ");
+        //puts(" B --> ε ");
+        depiler(stack);
         break;
     case 7:
-        puts(" C --> FC' ");
+        //puts(" C --> FC' ");
+        empiler(stack,6);
+        empiler(stack,8);
         break;
     case 8:
-        puts(" C' --> C\" ");
+        //puts(" C' --> C\" ");
+        empiler(stack,7);
         break;
     case 9:
-        puts(" C' --> ε ");
+        //puts(" C' --> ε ");
+        depiler(stack);
         break;
     case 10:
-        puts(" C\" --> *C' ");
+        //puts(" C\" --> *C' ");
+        empiler(stack,6);
+        empiler(stack,'*');
         break;
     case 11:
-        puts(" F --> a ");
+        //puts(" F --> a ");
+        empiler(stack,'a');
         break;
     case 12:
-        puts(" F --> b ");
+        //puts(" F --> b ");
+        empiler(stack,'b');
         break;
     case 13:
-        puts(" F --> (R) (ou F --> C, ask ihssane) ");
+        //puts(" F --> ( ");
+        empiler(stack,'(');
         break;
     }
 }
@@ -148,16 +186,56 @@ void analyseSyntaxiqueMot(pile* pProd, pile* pEntree)
     /// a pile entree
     while(1)
     {
-        if(pProd->pile[pProd->taille] >= 1 && pProd->pile[pProd->taille] <= 8)
+        int X = pProd->pile[pProd->taille];
+        int a = pEntree->pile[pEntree->taille];
+        int idProd = tableLL[X-1,retournerIndiceTerminal(a)];
+        if(X >= 1 && X <= 8)
         {
-            if(tableLL[pProd->pile[pProd->taille],pProd->pile[pEntree->taille]] != 0)
+
+            if(idProd != 0)
             {
                 depiler(pProd);
-
+                empilerProd(pProd,X);
+                afficherProduction(idProd);
+            }
+            else
+            {
+                puts("Erreur ! ");
+                system("PAUSE");
+                exit(4);
             }
         }
-        else{
-
+        else
+        {
+            if(X == '$')
+            {
+                if(a == '$')
+                {
+                    puts("Ce mot appartient à la grammaire des Regex du langage {a,b}");
+                    system("PAUSE");
+                    exit(0);
+                }
+                else
+                {
+                    puts("Erreur ! ");
+                    system("PAUSE");
+                    exit(5);
+                }
+            }
+            else
+            {
+                if(X == a)
+                {
+                    depiler(pProd);
+                    depiler(pEntree);
+                }
+                else
+                {
+                    puts("Erreur ! ");
+                    system("PAUSE");
+                    exit(6);
+                }
+            }
         }
     }
 }
@@ -191,6 +269,7 @@ int main()
         empiler(pileProd,1);
 
         //  Le traitement commence ici
+        analyseSyntaxiqueMot(pileProd,pileEntree);
 
     }
     else
