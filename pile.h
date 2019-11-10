@@ -5,7 +5,7 @@ typedef struct Pile
 } pile;
 
 
-void initialiserPile(pile *stack);
+pile* initialiserPile();
 void empiler(pile *stack, int value);
 void depiler(pile* stack);
 int sommetPile(pile* stack);

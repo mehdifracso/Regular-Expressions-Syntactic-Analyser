@@ -1,13 +1,16 @@
 #include "pile.h"
 
-void initialiserPile(pile *stack)
+pile *initialiserPile()
 {
-    stack = malloc(sizeof(pile));
+    pile *stack = malloc(sizeof(pile));
+
     if (stack != NULL)
     {
-        for (int i = 0; i < 100; stack->pile[i++] = 0)
+        int i;
+        for (i = 0; i < 100; stack->pile[i++] = 0)
             ;
         stack->taille = -1;
+        return stack;
     }
     else
     {
@@ -18,54 +21,48 @@ void initialiserPile(pile *stack)
 
 void empiler(pile *stack, int value)
 {
-    if(stack->taille == 99)
+    if (stack->taille == 99)
     {
-        puts("La pile est déjà pleine, veuillez redimensionner votre pile, le programme s'arretera");
+        puts("La pile est dï¿½jï¿½ pleine, veuillez redimensionner votre pile, le programme s'arretera");
         exit(3);
     }
     else
     {
-        stack->taille++;
-        stack->pile[stack->taille] = value;
+        stack->pile[stack->taille++] = value;
     }
 }
 
-void depiler(pile* stack)
+void depiler(pile *stack)
 {
-    if(stack->taille == 0)
+    if (stack->taille == -1)
     {
-        stack->pile[0] = 0;
-        puts("La pile est déjà vide, aucun depilement n'est possible");
+        puts("La pile est dÃ©jÃ  vide, aucun depilement n'est possible");
     }
     else
     {
-        stack->pile[stack->taille] = 0;
-        stack->taille--;
+        stack->pile[stack->taille--] = 0;
     }
 }
 
-
-int sommetPile(pile* stack)
+int sommetPile(pile *stack)
 {
     return stack->pile[stack->taille];
 }
 
-
-void inverserPile(pile*stack)
+void inverserPile(pile *stack)
 {
-    pile* tmpStack = NULL;
-    initialiserPile(tmpStack);
+    pile *tmpStack = NULL;
+    tmpStack = initialiserPile();
 
-    while(stack->taille != -1)
+    while (stack->taille != -1)
     {
-        empiler(tmpStack,sommetPile(stack));
+        empiler(tmpStack, sommetPile(stack));
         depiler(stack);
     }
 
-    while(tmpStack->taille != -1)
+    while (tmpStack->taille != -1)
     {
-        empiler(stack,sommetPile(tmpStack));
+        empiler(stack, sommetPile(tmpStack));
         depiler(tmpStack);
     }
 }
-
