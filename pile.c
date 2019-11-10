@@ -19,16 +19,77 @@ pile *initialiserPile()
     }
 }
 
+void afficherNTSansEspace(int i)
+{
+    switch (i)
+    {
+    case 1:
+        printf("R");
+        break;
+    case 2:
+        printf("R'");
+        break;
+    case 3:
+        printf("A");
+        break;
+    case 4:
+        printf("C");
+        break;
+    case 5:
+        printf("B");
+        break;
+    case 6:
+        printf("C'");
+        break;
+    case 7:
+        printf("C\"");
+        break;
+    case 8:
+        printf("F");
+        break;
+    default:
+        printf("%c", i);
+    }
+}
+void afficherPile(pile *stack)
+{
+    int i;
+    printf("Affichage pile : \n taille pile : %d\n", stack->taille);
+    for (i = stack->taille; i != -1; i--)
+        printf("Contenu : %c Position dans la pile : %d\n", stack->pile[i], i);
+    puts("Fin affichage");
+}
+
+void afficherPileProduction(pile *stack)
+{
+    int i;
+    for (i = 0; i < stack->taille + 1; i++)
+        afficherNTSansEspace(stack->pile[i]);
+
+}
+
+void afficherPileEntree(pile *stack)
+{
+    int i;
+    for (i = stack->taille; i != -1; i--)
+        printf("%c", stack->pile[i]);
+
+}
+
 void empiler(pile *stack, int value)
 {
     if (stack->taille == 99)
     {
-        puts("La pile est d�j� pleine, veuillez redimensionner votre pile, le programme s'arretera");
+        puts("La pile est déjà pleine, veuillez redimensionner votre pile, le programme s'arretera");
         exit(3);
     }
     else
     {
-        stack->pile[stack->taille++] = value;
+        if (value != -1)
+        {
+            stack->pile[++stack->taille] = value;
+            //  printf("Entrain d'empiler : nouvelle taille : %d\n", stack->taille);
+        }
     }
 }
 
@@ -40,7 +101,8 @@ void depiler(pile *stack)
     }
     else
     {
-        stack->pile[stack->taille--] = 0;
+        stack->pile[stack->taille] = 0;
+        stack->taille -= 1;
     }
 }
 
@@ -49,20 +111,17 @@ int sommetPile(pile *stack)
     return stack->pile[stack->taille];
 }
 
-void inverserPile(pile *stack)
+pile *inverserPile(pile *stack)
 {
-    pile *tmpStack = NULL;
-    tmpStack = initialiserPile();
+    pile *newStack = NULL;
+    newStack = initialiserPile();
 
     while (stack->taille != -1)
     {
-        empiler(tmpStack, sommetPile(stack));
+        empiler(newStack, sommetPile(stack));
         depiler(stack);
     }
 
-    while (tmpStack->taille != -1)
-    {
-        empiler(stack, sommetPile(tmpStack));
-        depiler(tmpStack);
-    }
+    //free(stack);
+    return newStack;
 }

@@ -4,9 +4,11 @@ typedef struct Pile
     int taille;
 } pile;
 
-
-pile* initialiserPile();
+pile *initialiserPile();
+void afficherPile(pile *stack);
 void empiler(pile *stack, int value);
-void depiler(pile* stack);
-int sommetPile(pile* stack);
-void inverserPile(pile*stack);
+void depiler(pile *stack);
+int sommetPile(pile *stack);
+pile *inverserPile(pile *stack);
+void afficherPileDansMemeLigneSommetVersBase(pile *stack);
+void afficherPileDansMemeLigneBaseVersSommet(pile *stack);
