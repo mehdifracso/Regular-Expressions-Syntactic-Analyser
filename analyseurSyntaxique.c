@@ -6,14 +6,14 @@
 
 int tableLL[8][7] =
     {
-        {1, 1, 1, 0, 0, 0, 0},
-        {0, 0, 0, 3, 2, 0, 3},
-        {4, 4, 4, 0, 0, 0, 0},
-        {7, 7, 7, 0, 0, 0, 0},
-        {5, 5, 5, 6, 6, 0, 6},
-        {9, 9, 9, 9, 9, 8, 9},
-        {0, 0, 0, 0, 0, 10, 0},
-        {11, 12, 13, 0, 0, 0, 0}};
+        {1, 1, 0, 0, 1, 0, 0}, //R
+        {0, 0, 2, 0, 0, 8, 8}, //R'
+        {3, 3, 0, 0, 3, 0, 0}, //S
+        {4, 4, 9, 0, 4, 9, 9}, //S'
+        {5, 5, 0, 0, 5, 0, 0}, //T
+        {10, 10, 10, 6, 10, 10, 10}, //T'
+        {11, 12, 0, 0, 7, 0, 0} //U
+    };
 
 int retournerIndiceTerminal(char c)
 {
@@ -23,13 +23,13 @@ int retournerIndiceTerminal(char c)
         return 0;
     case 'b':
         return 1;
-    case '(':
-        return 2;
-    case ')':
-        return 3;
     case '+':
-        return 4;
+        return 2;
     case '*':
+        return 3;
+    case '(':
+        return 4;
+    case ')':
         return 5;
     case '$':
         return 6;
@@ -49,22 +49,19 @@ void afficherTerminal(int i)
         puts(" R' ");
         break;
     case 3:
-        puts(" A ");
+        puts(" S ");
         break;
     case 4:
-        puts(" C ");
+        puts(" S' ");
         break;
     case 5:
-        puts(" B ");
+        puts(" T ");
         break;
     case 6:
-        puts(" C' ");
+        puts(" T' ");
         break;
     case 7:
-        puts(" C\" ");
-        break;
-    case 8:
-        puts(" F");
+        puts(" U ");
         break;
     }
 }
@@ -74,43 +71,40 @@ void afficherProduction(int i)
     switch (i)
     {
     case 1:
-        puts(" R --> AR' ");
+        puts(" R --> SR' ");
         break;
     case 2:
-        puts(" R' --> +R ");
+        puts(" R' --> +SR' ");
         break;
     case 3:
-        puts(" R' --> epsilon ");
+        puts(" S --> TS' ");
         break;
     case 4:
-        puts(" A --> CB ");
+        puts(" S' --> TS' ");
         break;
     case 5:
-        puts(" B --> A ");
+        puts(" T --> UT' ");
         break;
     case 6:
-        puts(" B --> epsilon ");
+        puts(" T' --> *T' ");
         break;
     case 7:
-        puts(" C --> FC' ");
+        puts(" U --> (R) ");
         break;
     case 8:
-        puts(" C' --> C\" ");
+        puts(" R' --> epsilon ");
         break;
     case 9:
-        puts(" C' --> epsilon ");
+        puts(" S' --> epsilon ");
         break;
     case 10:
-        puts(" C\" --> *C' ");
+        puts(" T' --> epsilon ");
         break;
     case 11:
-        puts(" F --> a ");
+        puts(" U --> a ");
         break;
     case 12:
-        puts(" F --> b ");
-        break;
-    case 13:
-        puts(" F --> ( ");
+        puts(" U --> b ");
         break;
     default:
         puts("Pas de production dans ce cas");
@@ -122,60 +116,58 @@ void empilerProd(pile *stack, int idProd)
     switch (idProd)
     {
     case 1:
-        //puts(" R --> AR' ");
+        // R --> SR'
         empiler(stack, 2);
         empiler(stack, 3);
         break;
     case 2:
-        //puts(" R' --> +R ");
-        empiler(stack, 1);
+        // R' --> +SR'
+        empiler(stack, 2);
+        empiler(stack, 3);
         empiler(stack, '+');
         break;
     case 3:
-        //puts(" R' --> ε ");
+        // S --> TS'
+        empiler(stack, 4);
+        empiler(stack, 5);
         break;
     case 4:
-        //puts(" A --> CB ");
-        empiler(stack, 5);
+        // S' --> TS
         empiler(stack, 4);
+        empiler(stack, 5);
         break;
     case 5:
-        //puts(" B --> A ");
-        empiler(stack, 3);
-        break;
-    case 6:
-        //puts(" B --> ε ");
-        //depiler(stack);
-        break;
-    case 7:
-        //puts(" C --> FC' ");
+        // T --> UT'
         empiler(stack, 6);
-        empiler(stack, 8);
-        break;
-    case 8:
-        //puts(" C' --> C\" ");
         empiler(stack, 7);
         break;
-    case 9:
-        //puts(" C' --> ε ");
-        //depiler(stack);
-        break;
-    case 10:
-        //puts(" C\" --> *C' ");
+    case 6:
+        //  T' --> *T'
         empiler(stack, 6);
         empiler(stack, '*');
         break;
+    case 7:
+        // U --> (R)
+        empiler(stack, ')');
+        empiler(stack, 1);
+        empiler(stack, '(');
+        break;
+    case 8:
+        // R' --> epsilon
+        break;
+    case 9:
+        // S' --> epsilon
+        break;
+    case 10:
+        // T' --> epsilon
+        break;
     case 11:
-        //puts(" F --> a ");
+        // U --> a
         empiler(stack, 'a');
         break;
     case 12:
-        //puts(" F --> b ");
+        //  U --> b;
         empiler(stack, 'b');
-        break;
-    case 13:
-        //puts(" F --> ( ");
-        empiler(stack, '(');
         break;
     }
 }
@@ -183,7 +175,7 @@ void empilerProd(pile *stack, int idProd)
 void analyseSyntaxiqueMot(pile *pProd, pile *pEntree)
 {
 
-    printf("Pile\t\tEntree\t\tSortie\n");
+    printf("Pile\t\t\tEntree\t\t\tSortie\n");
     while (1)
     {
         int X = pProd->pile[pProd->taille];
@@ -191,14 +183,14 @@ void analyseSyntaxiqueMot(pile *pProd, pile *pEntree)
         int idProd = tableLL[X - 1][retournerIndiceTerminal(a)];
 
         afficherPileProduction(pProd);
-        printf("\t\t");
+        printf("\t\t\t");
         afficherPileEntree(pEntree);
-        printf("\t\t");
+        printf("\t\t\t");
         afficherProduction(idProd);
 
 
 
-        if (X >= 1 && X <= 8)
+        if (X >= 1 && X <= 7)
         {
             if (idProd != 0)
             {
@@ -207,9 +199,11 @@ void analyseSyntaxiqueMot(pile *pProd, pile *pEntree)
             }
             else
             {
-                puts("Erreur!\n");
-                system("PAUSE");
-                exit(4);
+                puts("Erreur 0 !\n");
+                //system("PAUSE");
+                //break;
+                if( sommetPile(pEntree) == (int)'$') break;
+                depiler(pEntree);
             }
         }
         else
@@ -220,13 +214,14 @@ void analyseSyntaxiqueMot(pile *pProd, pile *pEntree)
                 {
                     puts("Ce mot appartient a la grammaire des Regex du langage {a,b}");
                     system("PAUSE");
-                    exit(0);
+                    system("CLS");
+                    break;
                 }
                 else
                 {
-                    puts("Erreur ! ");
-                    system("PAUSE");
-                    //exit(5);
+                    puts("Erreur 1 ! ");
+                    //system("PAUSE");
+                    break;
                 }
             }
             else
@@ -238,9 +233,9 @@ void analyseSyntaxiqueMot(pile *pProd, pile *pEntree)
                 }
                 else
                 {
-                    puts("Erreur ! ");
+                    puts("Erreur 2 ! ");
                     system("PAUSE");
-                    exit(6);
+                    break;
                 }
             }
         }
@@ -261,25 +256,33 @@ int main()
         pileEntree = initialiserPile();
         pileProd = initialiserPile();
 
+        int eofReached = 0;
         int readCharacter;
 
-        while (!feof(tokensFile))
+        while(!eofReached)
         {
-            readCharacter = fgetc(tokensFile);
-            printf("%c\n", readCharacter);
-            empiler(pileEntree, readCharacter);
+            viderPile(pileEntree);
+            viderPile(pileProd);
+            while (!(eofReached = feof(tokensFile)))
+            {
+                readCharacter = fgetc(tokensFile);
+                if(readCharacter == '\n') break;
+                empiler(pileEntree, readCharacter);
+            }
+
+            //  Initialisation des deux piles
+            // $ba
+            empiler(pileEntree, '$');
+            pileEntree = inverserPile(pileEntree);
+
+            empiler(pileProd, '$');
+            empiler(pileProd, 1);
+
+            //  Le traitement commence ici
+            analyseSyntaxiqueMot(pileProd, pileEntree);
         }
 
-        //  Initialisation des deux piles
-        // $ba
-        empiler(pileEntree, '$');
-        pileEntree = inverserPile(pileEntree);
 
-        empiler(pileProd, '$');
-        empiler(pileProd, 1);
-
-        //  Le traitement commence ici
-        analyseSyntaxiqueMot(pileProd, pileEntree);
         fclose(tokensFile);
     }
     else

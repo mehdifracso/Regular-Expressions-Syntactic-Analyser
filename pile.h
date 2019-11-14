@@ -12,3 +12,4 @@ int sommetPile(pile *stack);
 pile *inverserPile(pile *stack);
 void afficherPileDansMemeLigneSommetVersBase(pile *stack);
 void afficherPileDansMemeLigneBaseVersSommet(pile *stack);
+void viderPile(pile* stack);

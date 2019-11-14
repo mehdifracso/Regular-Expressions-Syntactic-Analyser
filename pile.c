@@ -30,22 +30,19 @@ void afficherNTSansEspace(int i)
         printf("R'");
         break;
     case 3:
-        printf("A");
+        printf("S");
         break;
     case 4:
-        printf("C");
+        printf("S'");
         break;
     case 5:
-        printf("B");
+        printf("T");
         break;
     case 6:
-        printf("C'");
+        printf("T'");
         break;
     case 7:
-        printf("C\"");
-        break;
-    case 8:
-        printf("F");
+        printf("U");
         break;
     default:
         printf("%c", i);
@@ -124,4 +121,18 @@ pile *inverserPile(pile *stack)
 
     //free(stack);
     return newStack;
+}
+
+
+void viderPile(pile* stack)
+{
+    if(stack->taille != -1)
+    {
+        int i;
+        for(i=0; i<stack->taille; i++)
+        {
+            depiler(stack);
+        }
+        stack->taille = -1;
+    }
 }
